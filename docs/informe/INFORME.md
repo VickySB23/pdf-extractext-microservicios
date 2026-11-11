@@ -3,7 +3,7 @@
 **Materia:** Desarrollo de Software
 **Institución:** Universidad Tecnológica Nacional – Facultad Regional San Rafael (UTN FRSR)
 **Integrantes:** Julieta Valentina Bignet, Victoria Sanchez Bujaldon
-**Repositorio:** https://github.com/VickySB23/pdf-extractext/tree/microservicios (el monolito de la etapa 1 está en la rama `monolito`)
+**Repositorio:** https://github.com/VickySB23/pdf-extractext-microservicios (proviene de la rama `microservicios` de https://github.com/VickySB23/pdf-extractext; el monolito de la etapa 1 está en la rama `monolito` del repositorio original)
 **Versión medida:** commit `ee50612` (corridas 40 a 43 de `docs/mediciones/`).
 
 ---

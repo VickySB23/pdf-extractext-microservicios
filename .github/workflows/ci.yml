@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, parte-dos, microservicios]
+    branches: [main]
   pull_request:
 
 jobs:

@@ -4,9 +4,9 @@ Trabajo práctico universitario de Desarrollo de Software.
 Universidad Tecnológica Nacional, Facultad Regional San Rafael, Ingeniería en Sistemas.
 Año 2026.
 Integrantes: Julieta Bignet y Victoria Sanchez Bujaldon.
-Repositorio: https://github.com/VickySB23/pdf-extractext, rama `microservicios`.
+Repositorio: https://github.com/VickySB23/pdf-extractext-microservicios. Proviene de la rama `microservicios` de https://github.com/VickySB23/pdf-extractext, con todo su historial.
 
-Este README documenta el stack de microservicios y las pruebas de carga. El monolito de la etapa 1 está en la rama `monolito`.
+Este README documenta el stack de microservicios y las pruebas de carga. El monolito de la etapa 1 está en la rama `monolito` del repositorio original.
 
 ## 1. Descripción
 
@@ -76,13 +76,13 @@ Cada servicio se organiza en capas: `core` (configuración y logs), `domain` (so
 ## 5. Instalación y ejecución
 
 ```bash
-git clone https://github.com/VickySB23/pdf-extractext.git
-cd pdf-extractext
+git clone https://github.com/VickySB23/pdf-extractext-microservicios.git
+cd pdf-extractext-microservicios
 docker compose up --build -d --wait
 docker compose ps
 ```
 
-`git clone` descarga la rama `microservicios`, que es la predeterminada.
+`git clone` descarga la rama `main`, que es la predeterminada.
 `--wait` espera a que todos los contenedores estén sanos. La primera vez tarda unos minutos porque construye las imágenes.
 
 Para cambiar la configuración, copiá `.env.example` como `.env` antes de levantar. Ninguna variable es obligatoria.
@@ -195,7 +195,7 @@ uv run pytest -q
 ```
 
 No necesitan Docker ni MongoDB: usan dobles de prueba.
-El workflow `.github/workflows/ci.yml` corre los tests de los dos servicios y construye las imágenes en cada push a `microservicios`, `parte-dos` o `main`, y en cada pull request.
+El workflow `.github/workflows/ci.yml` corre los tests de los dos servicios y construye las imágenes en cada push a `main` y en cada pull request.
 
 ## 10. Pruebas de carga
 
@@ -278,9 +278,11 @@ docker-compose.override.yml  Paneles para desarrollo; Compose lo carga solo
 
 ## 14. Ramas
 
-| Rama | Contenido |
+La rama `main` de este repositorio es la rama `microservicios` del repositorio original, con todo su historial. Las demás ramas siguen en https://github.com/VickySB23/pdf-extractext:
+
+| Rama del repositorio original | Contenido |
 | --- | --- |
-| `microservicios` | Versión final: microservicios, Consul, Traefik y pruebas de carga. |
+| `microservicios` | Versión final: microservicios, Consul, Traefik y pruebas de carga. Es la `main` de este repositorio. |
 | `monolito` | Monolito de la etapa 1, corregido. |
 | `parte-dos` | Versión anterior, medida antes de la migración a Consul. |
 | `main` | Separación inicial del monolito. |
