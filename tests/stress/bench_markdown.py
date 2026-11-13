@@ -4,7 +4,7 @@ import statistics
 import sys
 import time
 
-sys.path.insert(0, os.path.join("services", "extraction-service"))
+sys.path.insert(0, os.environ.get("EXTRACTION_SERVICE_DIR", os.path.join("..", "pdf-extraction-service")))
 
 import pymupdf
 

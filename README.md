@@ -6,7 +6,12 @@ Año 2026.
 Integrantes: Julieta Bignet y Victoria Sanchez Bujaldon.
 Repositorio: https://github.com/VickySB23/pdf-extractext-microservicios. Proviene de la rama `microservicios` de https://github.com/VickySB23/pdf-extractext, con todo su historial.
 
-Este README documenta el stack de microservicios y las pruebas de carga. El monolito de la etapa 1 está en la rama `monolito` del repositorio original.
+Este es el repositorio de despliegue: contiene el `docker-compose.yml` con Traefik, Consul y MongoDB, la documentación y las pruebas de carga. El código de cada microservicio está en su propio repositorio:
+
+- [VickySB23/pdf-extraction-service](https://github.com/VickySB23/pdf-extraction-service)
+- [VickySB23/pdf-document-service](https://github.com/VickySB23/pdf-document-service)
+
+El monolito de la etapa 1 está en la rama `monolito` del repositorio original.
 
 ## 1. Descripción
 
@@ -45,7 +50,8 @@ MongoDB
 - El PDF se procesa en memoria, sin archivos temporales. El checksum se calcula sobre el archivo y un índice único evita duplicados.
 - La extracción usa PyMuPDF por su mejor rendimiento frente a `pypdf`. El Markdown es una conversión propia y liviana: títulos, viñetas y párrafos.
 - Cada contenedor tiene límites de CPU y memoria; las réplicas usan 1 CPU y 512 MiB.
-- Las imágenes propias están versionadas: `pdf-extraction-service:v1.0.0` y `pdf-document-service:v1.0.0`.
+- Cada microservicio tiene su propio repositorio, como pide el factor I, Codebase, de [12-Factor App](https://12factor.net/es/codebase). Este repositorio solo los despliega.
+- Las imágenes propias están versionadas: `pdf-extraction-service:v1.0.1` y `pdf-document-service:v1.0.1`. Cada una se construye desde el tag `v1.0.1` de su repositorio.
 - La configuración entra por variables de entorno y los logs salen por stdout.
 
 Cada servicio se organiza en capas: `core` (configuración y logs), `domain` (solo en extraction-service), `application` (casos de uso), `infrastructure` (PyMuPDF, MongoDB, Consul y clientes HTTP) y `presentation` (rutas y esquemas HTTP).
@@ -70,7 +76,7 @@ Cada servicio se organiza en capas: `core` (configuración y logs), `domain` (so
 - Docker Desktop en Windows o macOS, o Docker Engine con el plugin Compose v2 en Linux.
 - Se recomiendan 8 GB de RAM: los límites de los contenedores suman cerca de 5 GB.
 - Los puertos `8080`, `8081` y `8500` libres.
-- Opcional, para correr los tests unitarios: Python 3.11 o superior y [uv](https://docs.astral.sh/uv/).
+- Opcional, para correr los tests unitarios: Python 3.11 o superior, [uv](https://docs.astral.sh/uv/) y un clon del repositorio de cada servicio.
 - Opcional, para las pruebas de carga desde el host: k6 y Vegeta. Los scripts `*-docker.ps1` los ejecutan como contenedores.
 
 ## 5. Instalación y ejecución
@@ -84,6 +90,7 @@ docker compose ps
 
 `git clone` descarga la rama `main`, que es la predeterminada.
 `--wait` espera a que todos los contenedores estén sanos. La primera vez tarda unos minutos porque construye las imágenes.
+Compose descarga el código de cada servicio desde su repositorio, en el tag `v1.0.1`: no hace falta clonarlos.
 
 Para cambiar la configuración, copiá `.env.example` como `.env` antes de levantar. Ninguna variable es obligatoria.
 
@@ -182,20 +189,17 @@ Cada réplica atiende una extracción por vez, porque PyMuPDF no admite hilos co
 
 ## 9. Tests unitarios
 
-Cada servicio tiene sus tests y se prueba por separado:
+Cada servicio tiene sus tests en su propio repositorio:
 
 ```bash
-cd services/document-service
-uv sync
-uv run pytest -q
-
-cd ../extraction-service
+git clone https://github.com/VickySB23/pdf-document-service.git
+cd pdf-document-service
 uv sync
 uv run pytest -q
 ```
 
-No necesitan Docker ni MongoDB: usan dobles de prueba.
-El workflow `.github/workflows/ci.yml` corre los tests de los dos servicios y construye las imágenes en cada push a `main` y en cada pull request.
+Lo mismo con `pdf-extraction-service`. No necesitan Docker ni MongoDB: usan dobles de prueba.
+Cada repositorio de servicio tiene su propio workflow de CI, con los tests y el build de la imagen. En este repositorio, `.github/workflows/ci.yml` valida el `docker-compose.yml` y construye las imágenes en cada push a `main` y en cada pull request.
 
 ## 10. Pruebas de carga
 
@@ -229,7 +233,7 @@ Otros scripts de `tests/stress/`:
 | Script | Uso |
 | --- | --- |
 | `bench_extractors.py` | Compara `pypdf` con PyMuPDF sobre los PDFs oficiales. |
-| `bench_markdown.py` | Mide el costo del Markdown frente al texto plano. |
+| `bench_markdown.py` | Mide el costo del Markdown frente al texto plano. Usa el código de un clon de `pdf-extraction-service` ubicado junto a este repositorio, o en la ruta de `EXTRACTION_SERVICE_DIR`. |
 | `bench_in_container.py` | Mide la extracción dentro de un contenedor. |
 | `experimentos/bench_variantes.py` | Compara variantes de extracción: flags de PyMuPDF y pdfium. |
 | `run-experiment.ps1` | Corre k6 y Vegeta desde el host con estadísticas de Docker. |
@@ -258,19 +262,10 @@ Las imágenes finales no incluyen `uv` ni `pip`, y corren con un usuario sin pri
 ## 13. Estructura del repositorio
 
 ```text
-services/
-  document-service/
-    app/                   Código en capas: core, application, infrastructure, presentation
-    tests/                 Tests unitarios
-    Dockerfile
-  extraction-service/
-    app/                   Código en capas: core, domain, application, infrastructure, presentation
-    tests/                 Tests unitarios
-    Dockerfile
 tests/stress/              Scripts k6, Vegeta, benchmarks y PDFs oficiales
 docs/informe/              Informe técnico final
 docs/mediciones/           Registro y salidas crudas de medición
-.github/workflows/ci.yml   Tests y build de imágenes
+.github/workflows/ci.yml   Validación del compose y build de imágenes
 docker-compose.yml         Stack completo
 docker-compose.override.yml  Paneles para desarrollo; Compose lo carga solo
 .env.example               Variables disponibles

@@ -6,29 +6,12 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: Tests (${{ matrix.service }})
+  compose:
+    name: Compose
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        service: [document-service, extraction-service]
-    defaults:
-      run:
-        working-directory: services/${{ matrix.service }}
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-      - name: Instalar dependencias
-        run: uv sync
-      - name: Correr tests
-        run: uv run pytest -q
-
-  docker:
-    name: Build de imágenes
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v4
-      - name: Construir todos los servicios
+      - name: Validar docker-compose.yml
+        run: docker compose config -q
+      - name: Construir las imágenes desde los repositorios de cada servicio
         run: docker compose build

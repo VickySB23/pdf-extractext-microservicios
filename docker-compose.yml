@@ -39,8 +39,8 @@ services:
       - traefik-net
 
   extraction-service:
-    image: pdf-extraction-service:v1.0.0
-    build: ./services/extraction-service
+    image: pdf-extraction-service:v1.0.1
+    build: https://github.com/VickySB23/pdf-extraction-service.git#v1.0.1
     deploy:
       replicas: 5
       resources:
@@ -61,8 +61,8 @@ services:
       - traefik-net
 
   document-service:
-    image: pdf-document-service:v1.0.0
-    build: ./services/document-service
+    image: pdf-document-service:v1.0.1
+    build: https://github.com/VickySB23/pdf-document-service.git#v1.0.1
     deploy:
       resources:
         limits:
