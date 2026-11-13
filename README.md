@@ -255,7 +255,7 @@ Son medias de 3 corridas dentro de la red de Docker. El informe explica el anál
 
 ## 12. Seguridad
 
-El 9 de noviembre de 2026, `trivy fs .` no informó vulnerabilidades, secretos ni errores de configuración. `trivy image` no informó críticas en las imágenes propias ni paquetes de Python vulnerables; quedan paquetes de Debian.
+El 13 de noviembre de 2026, con Trivy 0.76.2, `trivy fs .` no informó vulnerabilidades, secretos ni errores de configuración en ninguno de los tres repositorios: este, `pdf-extraction-service` y `pdf-document-service`. `trivy image` no informó críticas en `pdf-extraction-service:v1.0.1` ni en `pdf-document-service:v1.0.1`, ni paquetes de Python vulnerables; quedan paquetes de Debian, en su mayoría sin corrección publicada.
 
 Las imágenes finales no incluyen `uv` ni `pip`, y corren con un usuario sin privilegios. MongoDB solo está en la red interna `backend` y no publica puertos.
 
