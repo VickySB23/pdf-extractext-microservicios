@@ -51,7 +51,7 @@ MongoDB
 - La extracción usa PyMuPDF por su mejor rendimiento frente a `pypdf`. El Markdown es una conversión propia y liviana: títulos, viñetas y párrafos.
 - Cada contenedor tiene límites de CPU y memoria; las réplicas usan 1 CPU y 512 MiB.
 - Cada microservicio tiene su propio repositorio, como pide el factor I, Codebase, de [12-Factor App](https://12factor.net/es/codebase). Este repositorio solo los despliega.
-- Las imágenes propias están versionadas: `pdf-extraction-service:v1.0.1` y `pdf-document-service:v1.0.1`. Cada una se construye desde el tag `v1.0.1` de su repositorio.
+- Las imágenes propias están versionadas: `pdf-extraction-service:v1.0.2` y `pdf-document-service:v1.0.2`. Cada una se construye desde el tag `v1.0.2` de su repositorio.
 - La configuración entra por variables de entorno y los logs salen por stdout.
 
 Cada servicio se organiza en capas: `core` (configuración y logs), `domain` (solo en extraction-service), `application` (casos de uso), `infrastructure` (PyMuPDF, MongoDB, Consul y clientes HTTP) y `presentation` (rutas y esquemas HTTP).
@@ -90,7 +90,7 @@ docker compose ps
 
 `git clone` descarga la rama `main`, que es la predeterminada.
 `--wait` espera a que todos los contenedores estén sanos. La primera vez tarda unos minutos porque construye las imágenes.
-Compose descarga el código de cada servicio desde su repositorio, en el tag `v1.0.1`: no hace falta clonarlos.
+Compose descarga el código de cada servicio desde su repositorio, en el tag `v1.0.2`: no hace falta clonarlos.
 
 Para cambiar la configuración, copiá `.env.example` como `.env` antes de levantar. Ninguna variable es obligatoria.
 
@@ -255,7 +255,7 @@ Son medias de 3 corridas dentro de la red de Docker. El informe explica el anál
 
 ## 12. Seguridad
 
-El 13 de noviembre de 2026, con Trivy 0.76.2, `trivy fs .` no informó vulnerabilidades, secretos ni errores de configuración en ninguno de los tres repositorios: este, `pdf-extraction-service` y `pdf-document-service`. `trivy image` no informó críticas en `pdf-extraction-service:v1.0.1` ni en `pdf-document-service:v1.0.1`, ni paquetes de Python vulnerables; quedan paquetes de Debian, en su mayoría sin corrección publicada.
+El 17 de noviembre de 2026, con Trivy 0.76.2, `trivy fs .` no informó vulnerabilidades, secretos ni errores de configuración en ninguno de los tres repositorios: este, `pdf-extraction-service` y `pdf-document-service`, incluidas las dependencias nuevas que suma PyMuPDF 2.1, como onnxruntime y numpy. `trivy image` no informó críticas en `pdf-extraction-service:v1.0.2` ni en `pdf-document-service:v1.0.2`, ni paquetes de Python vulnerables. Quedan 211 vulnerabilidades del Debian de la imagen base de Python; solo 2 tienen corrección publicada, ambas en `zlib1g`, y la imagen oficial todavía no la incorporó.
 
 Las imágenes finales no incluyen `uv` ni `pip`, y corren con un usuario sin privilegios. MongoDB solo está en la red interna `backend` y no publica puertos.
 
